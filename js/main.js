@@ -86,9 +86,13 @@ function updateDT(data) {
 
   // Format dataset and redraw DataTable. Use second index for key name
   const forks = [];
+  const github = 'https://github.com/';
   for (let fork of data) {
-    fork.repoLink = `<a href="https://github.com/${fork.full_name}" target="_blank" rel="noopener noreferrer">Link</a>`;
-    fork.ownerName = `<img src="${fork.owner.avatar_url || 'https://avatars.githubusercontent.com/u/0?v=4'}&s=48" width="24" height="24" class="mr-2 rounded-circle" />${fork.owner ? fork.owner.login : '<strike><em>Unknown</em></strike>'}`;
+    // fork.repoLink = `<a href="${github}${fork.full_name}" target="_blank" rel="noopener noreferrer">Link</a>`;
+    fork.ownerName = `<a href="${github}${fork.owner.login}" title="Open in new tab: ${fork.owner.login}" target="_blank"><img src="${fork.owner.avatar_url || 'https://avatars.githubusercontent.com/u/0?v=4'}&s=48" width="24" height="24" class="mr-2 rounded-circle" />${fork.owner ? fork.owner.login : '<strike><em>Unknown</em></strike>'}</a>`;
+    fork.repoName = `<a href="${github}${fork.full_name}" title="Open in new tab: ${fork.full_name}" target="_blank">${fork.name}</a>`;
+    fork.forks_count = `${(fork.forks_count >= 1) ? `<a href="${github}${fork.full_name}/forks" title="Open in new tab: ${fork.full_name}/forks" target="_blank">${fork.forks_count}</a>` : 0}`;
+    fork.open_issues_count = `${(fork.open_issues_count >= 1) ? `<a href="${github}${fork.full_name}/issues" title="Open in new tab: ${fork.full_name}/issues" target="_blank">${fork.open_issues_count}</a>` : 0}`;
     forks.push(fork);
   }
   const dataSet = forks.map(fork =>
@@ -103,14 +107,12 @@ function updateDT(data) {
 function initDT() {
   // Create ordered Object with column name and mapped display name
   window.columnNamesMap = [
-    // [ 'Repository', 'full_name' ],
-    ['Link', 'repoLink'], // custom key
-    ['Owner', 'ownerName'], // custom key
-    ['Name', 'name'],
+    // ['Link', 'repoLink'],
+    ['Owner', 'ownerName'],
+    ['Repo', 'repoName'],
     ['Branch', 'default_branch'],
     ['Stars', 'stargazers_count'],
     ['Forks', 'forks_count'],
-    // ['Forks', 'forks'],
     ['Open Issues', 'open_issues_count'],
     ['Size', 'size'],
     ['Last Push', 'pushed_at'],
@@ -151,8 +153,8 @@ function initDT() {
       };
     }),
     columnDefs: [
-      { className: 'dt-right', targets: [4, 5, 6, 7, 9, 10] }, // numbers
-      { width: '120px', targets: 8 }, // date
+      { className: 'dt-right', targets: [3, 4, 5, 6, 8, 9] }, // numbers
+      { width: '120px', targets: 7 }, // date
     ],
     order: [[sortColumnIdx, 'desc']],
     createdRow: function (row, _, index) {
@@ -203,7 +205,6 @@ async function fetchAndShow(repo) {
       default_branch: fork.default_branch,
       stargazers_count: fork.stargazers_count,
       forks_count: fork.forks_count,
-      // forks: fork.forks,
       open_issues_count: fork.open_issues_count,
       size: fork.size,
       pushed_at: fork.pushed_at,
