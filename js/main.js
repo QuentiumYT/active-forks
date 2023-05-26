@@ -1,5 +1,5 @@
 window.addEventListener('load', () => {
-  initDT(); // Initialize the DatatTable and window.columnNames variables
+  initDT(); // Initialize the DataTable and window.columnNames variables
 
   addDarkmodeWidget();
 
@@ -11,16 +11,17 @@ window.addEventListener('load', () => {
 
   try {
     const token = localStorage.getItem('token');
-    if (token)
+    if (token) {
       document.getElementById('token').value = token;
-      toggleToken();
-  } catch {}
+    }
+    toggleToken();
+  } catch { }
 
   try {
     const branch = localStorage.getItem('branch');
     if (branch)
       document.getElementById('branch').value = branch;
-  } catch {}
+  } catch { }
 
   if (repo) {
     document.getElementById('q').value = repo;
@@ -43,7 +44,7 @@ function toggleToken() {
 }
 
 function addDarkmodeWidget() {
-  new Darkmode( { label: '🌓' } ).showWidget();
+  new Darkmode({ label: '🌓' }).showWidget();
 }
 
 let running = false;
@@ -55,7 +56,7 @@ async function fetchData() {
   }
   Runner.start();
 
-  const repo = document.getElementById('q').value.replaceAll(' ','');
+  const repo = document.getElementById('q').value.replaceAll(' ', '');
   const re = /[-_\w]+\/[-_.\w]+/;
 
   const urlRepo = getRepoFromUrl();
@@ -154,14 +155,15 @@ function initDT() {
       { width: '120px', targets: 8 }, // date
     ],
     order: [[sortColumnIdx, 'desc']],
-    createdRow: function(row, _, index) {
+    createdRow: function (row, _, index) {
       $('[data-toggle=popover]', row).popover();
-      if (index === 0)
+      if (index === 0) {
         row.classList.add('original-repo');
+      }
     },
     scrollX: true,
     // paging: false,
-    searchBuilder:{
+    searchBuilder: {
       // all options at default
     }
   });
@@ -175,14 +177,14 @@ async function fetchAndShow(repo) {
   repo = repo.replace('http://github.com/', '');
   repo = repo.replace(/\.git$/, '');
 
-  const token = document.getElementById('token').value.replaceAll(' ','');
+  const token = document.getElementById('token').value.replaceAll(' ', '');
   if (token) {
     localStorage.setItem('token', token);
   } else {
     localStorage.removeItem('token');
   }
 
-  const branch = document.getElementById('branch').value.replaceAll(' ','');
+  const branch = document.getElementById('branch').value.replaceAll(' ', '');
   if (branch) {
     localStorage.setItem('branch', branch);
   } else {
@@ -362,9 +364,9 @@ function printInfo(sep, data, fork) {
         c.author_date = c.commit.author.date.replace('Z', '').replace('T', ' ');
         c.author_login = c.author && c.author.login ? c.author.login : '-';
         const sha = c.sha.substr(0, 6);
-        c.link = `<a href="https://github.com/${fork.owner.login}/${fork.name}/commit/${sha}">${sha}</a>`
+        c.link = `<a href="https://github.com/${fork.owner.login}/${fork.name}/commit/${sha}">${sha}</a>`;
         return c;
-       })
+      })
       .map(c => `${c.link} ${c.author_date.substr(0, 10)} ${c.author_login} - ${c.commit.message}`)
       .map(s => s.replace(/[\n\r]/g, ' ').substr(0, 150))
       .join('\n')
@@ -415,7 +417,7 @@ function Api(token) {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        authorization: "token " + token
+        'Authorization': 'Token ' + token,
       }
     }
     // : undefined;
@@ -500,7 +502,7 @@ function ApiCache() {
         if (cachedString)
           map.set(key, cachedString);
       }
-    } catch {}
+    } catch { }
 
     const cached = JSON.parse(cachedString);
     if (cached) {
@@ -530,12 +532,12 @@ function ApiCache() {
 }
 
 const Runner = {
-  start: function() {
+  start: function () {
     running = true;
     $('#find .find-label').text('Stop');
     $('#find #spinner').addClass('d-inline-block');
   },
-  stop: function() {
+  stop: function () {
     running = false;
     $('#find .find-label').text('Find');
     $('#find #spinner').removeClass('d-inline-block');
@@ -544,7 +546,7 @@ const Runner = {
 
 const Options = {
 
-  loadAndShow: function() {
+  loadAndShow: function () {
     $('#options')
       .on('show.bs.collapse', () => $('.options-button').addClass('options-button--expanded'))
       .on('hide.bs.collapse', () => $('.options-button').removeClass('options-button--expanded'));
@@ -557,10 +559,10 @@ const Options = {
       $('#sameSize').attr('checked', saved.sameSize);
       $('#samePushDate').attr('checked', saved.samePushDate);
       $('#maxRecords').val(saved.maxRecords);
-    } catch {}
+    } catch { }
   },
 
-  getAndSave: function() {
+  getAndSave: function () {
     const sameSize = $('#sameSize').is(':checked');
     const samePushDate = $('#samePushDate').is(':checked');
     const maxRecords = $('#maxRecords').val();
@@ -568,7 +570,7 @@ const Options = {
     const val = { sameSize, samePushDate, maxRecords };
     try {
       localStorage.setItem('options', JSON.stringify(val));
-    } catch {}
+    } catch { }
     return val;
   }
 };
