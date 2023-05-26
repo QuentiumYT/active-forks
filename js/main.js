@@ -49,12 +49,12 @@ function addDarkmodeWidget() {
 
 let running = false;
 
-async function fetchData() {
+async function fetchData(diff = false) {
   if (running) {
     running = false;
     return;
   }
-  Runner.start();
+  Runner.start(diff);
 
   const repo = document.getElementById('q').value.replaceAll(' ', '');
   const re = /[-_\w]+\/[-_.\w]+/;
@@ -67,12 +67,18 @@ async function fetchData() {
 
   if (re.test(repo)) {
     (async function () {
-      await fetchAndShow(repo);
+      await fetchAndShow(repo, diff);
 
-      Runner.stop();
+      if (diff) {
+        window.forkTable.columns([8, 9]).visible(true);
+      } else {
+        window.forkTable.columns([8, 9]).visible(false);
+      }
+
+      Runner.stop(diff);
     })();
   } else {
-    Runner.stop();
+    Runner.stop(diff);
     showMsg(
       'Invalid GitHub repository! Format is &lt;username&gt;/&lt;repo&gt;',
       'danger'
@@ -104,7 +110,7 @@ function updateDT(data) {
     .draw();
 }
 
-function initDT() {
+function initDT(diff = false) {
   // Create ordered Object with column name and mapped display name
   window.columnNamesMap = [
     // ['Link', 'repoLink'],
@@ -169,12 +175,18 @@ function initDT() {
       // all options at default
     }
   });
+
+  // remove diff columns if not diffing
+  if (!diff) {
+    window.forkTable.columns([8, 9]).visible(false);
+  }
+
   let table = window.forkTable;
   new $.fn.dataTable.SearchBuilder(table, {});
   table.searchBuilder.container().prependTo(table.table().container());
 }
 
-async function fetchAndShow(repo) {
+async function fetchAndShow(repo, diff = false) {
   repo = repo.replace('https://github.com/', '');
   repo = repo.replace('http://github.com/', '');
   repo = repo.replace(/\.git$/, '');
@@ -216,13 +228,14 @@ async function fetchAndShow(repo) {
 
     const multiLimiter = data => data.map(singleLimiter);
 
-    const info = window.forkTable.page.info();
-
-    const originalRepo = await api.fetch(`https://api.github.com/repos/${repo}`, singleLimiter);
-    originalRepo.diff_from_original = originalRepo.diff_to_original = '0';
-    originalRepo.behind_by = originalRepo.ahead_by = '0';
-    const originalBranch = branch ? branch : originalRepo.default_branch;
-    data.push(originalRepo);
+    let originalBranch = branch ? branch : 'main';
+    if (diff) {
+      const originalRepo = await api.fetch(`https://api.github.com/repos/${repo}`, singleLimiter);
+      originalRepo.diff_from_original = originalRepo.diff_to_original = '0';
+      originalRepo.behind_by = originalRepo.ahead_by = '0';
+      originalBranch = branch ? branch : originalRepo.default_branch;
+      data.push(originalRepo);
+    }
 
     let page = 1;
     while (data.length - 1 < maxRecords) {
@@ -230,11 +243,19 @@ async function fetchAndShow(repo) {
       const someData = await api.fetch(url, multiLimiter);
 
       if (someData.length === 0) break;
+
+      someData.forEach(fork => {
+        fork.diff_from_original = '0';
+        fork.diff_to_original = '0';
+        fork.behind_by = '0';
+      });
+
       data.push(...someData);
+      if (someData.length < maxRecords) break;
       ++page;
     }
 
-    await updateData(repo, originalBranch, data.slice(1), api);
+    await updateData(repo, originalBranch, data.slice(1), api, diff);
   } catch (error) {
     console.error(error);
   }
@@ -276,8 +297,7 @@ function getRepoFromUrl() {
   return urlRepo && decodeURIComponent(urlRepo);
 }
 
-async function updateData(repo, originalBranch, forks, api) {
-
+async function updateData(repo, originalBranch, forks, api, diff = false) {
   forks.forEach(fork => fork.diff_from_original = fork.diff_to_original = fork.behind_by = fork.ahead_by = '');
 
   let index = 1;
@@ -295,7 +315,7 @@ async function updateData(repo, originalBranch, forks, api) {
 
       const updated = similarChecker.apply(fork);
 
-      if (!updated) {
+      if (!updated && diff) {
         await fetchMore(repo, originalBranch, fork, api);
         similarChecker.cache(fork);
       }
@@ -305,7 +325,9 @@ async function updateData(repo, originalBranch, forks, api) {
   } finally {
     progress.hide();
 
-    await api.refreshLimits();
+    if (diff) {
+      await api.refreshLimits();
+    }
     quota.update();
   }
 }
@@ -533,15 +555,25 @@ function ApiCache() {
 }
 
 const Runner = {
-  start: function () {
+  start: function (diff) {
     running = true;
-    $('#find .find-label').text('Stop');
-    $('#find #spinner').addClass('d-inline-block');
+    if (diff) {
+      $('#findDiff .find-label').text('Stop');
+      $('#findDiff #spinner').addClass('d-inline-block');
+    } else {
+      $('#find .find-label').text('Stop');
+      $('#find #spinner').addClass('d-inline-block');
+    }
   },
-  stop: function () {
+  stop: function (diff) {
     running = false;
-    $('#find .find-label').text('Find');
-    $('#find #spinner').removeClass('d-inline-block');
+    if (diff) {
+      $('#findDiff .find-label').text('Find with diff');
+      $('#findDiff #spinner').removeClass('d-inline-block');
+    } else {
+      $('#find .find-label').text('Find');
+      $('#find #spinner').removeClass('d-inline-block');
+    }
   }
 };
 
