@@ -95,7 +95,7 @@ function updateDT(data) {
   const github = 'https://github.com/';
   for (let fork of data) {
     // fork.repoLink = `<a href="${github}${fork.full_name}" target="_blank" rel="noopener noreferrer">Link</a>`;
-    fork.ownerName = `<a href="${github}${fork.owner.login}" title="Open in new tab: ${fork.owner.login}" target="_blank"><img src="${fork.owner.avatar_url || 'https://avatars.githubusercontent.com/u/0?v=4'}&s=48" width="24" height="24" class="mr-2 rounded-circle" />${fork.owner ? fork.owner.login : '<strike><em>Unknown</em></strike>'}</a>`;
+    fork.ownerName = `<a href="${github}${fork.owner.login}" title="Open in new tab: ${fork.owner.login}" target="_blank"><img src="${fork.owner.avatar_url || 'https://avatars.githubusercontent.com/u/0?v=4'}&s=48" width="24" height="24" class="me-2 rounded-circle" />${fork.owner ? fork.owner.login : '<strike><em>Unknown</em></strike>'}</a>`;
     fork.repoName = `<a href="${github}${fork.full_name}" title="Open in new tab: ${fork.full_name}" target="_blank">${fork.name}</a>`;
     fork.forks_count = `${(fork.forks_count >= 1) ? `<a href="${github}${fork.full_name}/forks" title="Open in new tab: ${fork.full_name}/forks" target="_blank">${fork.forks_count}</a>` : 0}`;
     fork.open_issues_count = `${(fork.open_issues_count >= 1) ? `<a href="${github}${fork.full_name}/issues" title="Open in new tab: ${fork.full_name}/issues" target="_blank">${fork.open_issues_count}</a>` : 0}`;
@@ -182,7 +182,7 @@ function initDT(diff = false) {
       };
     }),
     columnDefs: [
-      { className: 'dt-right', targets: [3, 4, 5, 6, 8, 9] }, // numbers
+      { className: 'dt-left', targets: [3, 4, 5, 6, 8, 9] }, // numbers
       { width: '120px', targets: 7 }, // date
     ],
     order: [[sortColumnIdx, 'desc']],
@@ -311,7 +311,7 @@ function showMsg(msg, type) {
 
   document.getElementById('data-body').innerHTML = `
         <div class="alert ${alert_type} alert-dismissible fade show" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
             ${msg}
