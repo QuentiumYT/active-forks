@@ -1,0 +1,53 @@
+th:nth-child(2) {
+	width: 15%;
+}
+th:nth-child(3) {
+	width: 25%;
+}
+th, tr, td {
+	border: none;
+}
+#dark-mode-toggle {
+	border: none;
+	border-radius: 100%;
+	background-color: var(--bs-emphasis-color);
+	width: 3rem;
+	height: 3rem;
+	position: fixed;
+	right: 2rem;
+	bottom: 2rem;
+	z-index: 5;
+}
+[data-bs-theme=dark] {
+	--bs-border-color: #647078;
+}
+table.dataTable thead > tr > th.dt-orderable-asc span.dt-column-order:before, table.dataTable thead > tr > th.dt-orderable-asc span.dt-column-order:after, table.dataTable thead > tr > th.dt-orderable-desc span.dt-column-order:before, table.dataTable thead > tr > th.dt-orderable-desc span.dt-column-order:after, table.dataTable thead > tr > th.dt-ordering-asc span.dt-column-order:before, table.dataTable thead > tr > th.dt-ordering-asc span.dt-column-order:after, table.dataTable thead > tr > th.dt-ordering-desc span.dt-column-order:before, table.dataTable thead > tr > th.dt-ordering-desc span.dt-column-order:after,
+table.dataTable thead > tr > td.dt-orderable-asc span.dt-column-order:before,
+table.dataTable thead > tr > td.dt-orderable-asc span.dt-column-order:after,
+table.dataTable thead > tr > td.dt-orderable-desc span.dt-column-order:before,
+table.dataTable thead > tr > td.dt-orderable-desc span.dt-column-order:after,
+table.dataTable thead > tr > td.dt-ordering-asc span.dt-column-order:before,
+table.dataTable thead > tr > td.dt-ordering-asc span.dt-column-order:after,
+table.dataTable thead > tr > td.dt-ordering-desc span.dt-column-order:before,
+table.dataTable thead > tr > td.dt-ordering-desc span.dt-column-order:after {
+	opacity: 0.4;
+}
+table.dataTable thead > tr > th.dt-ordering-asc span.dt-column-order:before, table.dataTable thead > tr > th.dt-ordering-desc span.dt-column-order:after,
+table.dataTable thead > tr > td.dt-ordering-asc span.dt-column-order:before,
+table.dataTable thead > tr > td.dt-ordering-desc span.dt-column-order:after {
+	opacity: 1;
+}
+table.dataTable th.dt-type-numeric, table.dataTable td.dt-type-numeric {
+	text-align: start;
+}
+.form-control:focus, .btn-primary:focus, .btn-secondary:focus, .form-select:focus, .dt-column-order:focus, .dt-layout-full:focus, table a:focus, .page-link:focus {
+	outline: 0.125rem solid white;
+	box-shadow: 0 0 0 0.25rem blue;
+}
+button:focus:not(:focus-visible) {
+	box-shadow: none;
+}
+.form-control:focus-visible, .btn-primary:focus-visible, .btn-secondary:focus-visible, .form-select:focus-visible, .dt-column-order:focus-visible, .dt-layout-full:focus-visible, table a:focus-visible, .page-link:focus-visible {
+	outline: 0.125rem solid white;
+	box-shadow: 0 0 0 0.25rem blue;
+}

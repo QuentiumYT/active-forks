@@ -1,6 +1,6 @@
 # ![](https://github.githubassets.com/favicons/favicon.svg) GitHub active-forks
 
-> Find the active github forks of a project
+> Find the active GitHub forks of a project
 
 This project allows you to find the most active forks of a repository.
 
